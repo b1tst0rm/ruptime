@@ -1,6 +1,7 @@
 # ruptime
 Remote uptime for UNIX servers implemented in C
 
+The server runs on TCP port 44444 and the clients connect to it.
 
 # Instructions
 In this problem you are required to write two programs, a client and a server to implement the ruptime Unix shell command.
