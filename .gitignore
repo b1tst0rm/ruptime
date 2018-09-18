@@ -1,0 +1,4 @@
+ruptimeClient
+ruptimeServer
+*.o
+*.swp

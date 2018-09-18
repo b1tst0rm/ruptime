@@ -1,45 +1,43 @@
 #include <stdio.h>
 #include <sys/socket.h>
-#include <sys/types.h>
 #include <stdlib.h>
-#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <string.h>
+#include <unistd.h>
+#define PORT 44444
 
-int main() {
-    char buffer[128] = {0};
-    struct sockaddr_in server_addr;
-    int addrlen = sizeof(server_addr);
-    int socket_fd;
+int main(int argc, char const *argv[])
+{
+        struct sockaddr_in address;
+        int sock = 0, valread;
+        struct sockaddr_in serv_addr;
+        char *message = "uptime";
+        char buffer[1024] = {0};
 
+        if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) { 
+            printf("Failed to create socket."); 
+            return -1;
+        }
 
-    if ((socket_fd = socket(AF_INET, SOCK_STREAM, 0)) <= 0) {
-        perror("Failed to create socket.");
-        exit(0);
-    }
+        memset(&serv_addr, '0', sizeof(serv_addr)); // allocate memory to store address
 
-    memset(&server_addr, '0', addrlen);
+        serv_addr.sin_family = AF_INET; // IPv4
+        serv_addr.sin_port = htons(PORT); // network byte order conversion
 
-    server_addr.sin_family = AF_INET; // IPv4
-    server_addr.sin_port = htons(44444);
+        // convert IP address from text to binary
+        if (inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr) <= 0) {
+                printf("Invalid address provided.");
+                return -1;
+        }
 
-    if (inet_pton(AF_INET, "127.0.0.1", &server_addr.sin_addr) <= 0) {
-        printf("Address is not valid.");
-        exit();
-    }
+        if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
+                printf("\nConnection Failed \n");
+                return -1;
+        }
 
-    if (connect(socket_fd, (struct sockaddr*)&server_addr, addrlen) < 0) {
-        printf("Connection failed.");
-        exit();
-    }
-    
-    send(socket_fd, "test", strlen("test"), 0);
-    resp = read(socket_fd, buffer, 128);
-    printf("RESPONSE: %s\n", buffer);
-    return 0;
+        send(sock, message, strlen(message), 0);
+        printf("Uptime request sent\n");
+        valread = read(sock, buffer, 1024);
+        printf("SERVER RESPONSE: %s\n", buffer);
+        return 0;
 }
-
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = INADDR_ANY;
-    server_addr.sin_port = htons(44444);
-
-}
-
