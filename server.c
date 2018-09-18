@@ -41,7 +41,7 @@ int main(int argc, char const *argv[])
                 return -1;
         }
   
-        // Optional step that orcefully attaches socket to PORT
+        // Optional step that forcefully attaches socket to PORT
         if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) { 
                 printf("Failed at setsockopt.\n");
                 return -1;
